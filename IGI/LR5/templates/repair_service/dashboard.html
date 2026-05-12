@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>Личный кабинет ({{ profile.get_role_display }})</h2>
+        <p class="text-muted">Дата по API: {{ current_time }} | Курс НБРБ: 1 USD = {{ usd_rate }} BYN</p>
+    </div>
+    <div class="col-md-4">
+        <!-- Текстовый календарь (из модуля calendar) -->
+        <div class="bg-light p-2 rounded" style="font-size: 0.8rem;">
+            {{ html_calendar|safe }}
+        </div>
+    </div>
+</div>
+
+{% if profile.role == 'client' %}
+    <h4>Мои заказы</h4>
+    <table class="table table-striped">
+        <tr>
+            <th>Договор</th><th>Устройство</th><th>Статус</th><th>Итого (BYN)</th><th>Итого (~USD)</th>
+        </tr>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.contract_number }}</td>
+            <td>{{ order.device.brand_model }}</td>
+            <td>{{ order.get_status_display }}</td>
+            <td>{{ order.total_cost }} BYN</td>
+            <!-- Перевод в USD по курсу API -->
+            <td class="text-success fw-bold">~ {% widthratio order.total_cost usd_rate 1 %} $</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">У вас пока нет заказов.</td></tr>
+        {% endfor %}
+    </table>
+
+{% elif profile.role == 'master' %}
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Статистика сервиса</h4>
+            <ul class="list-group mb-4">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Всего заказов: <span class="badge bg-primary rounded-pill">{{ stats.total_orders }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Средний чек: <span class="badge bg-success rounded-pill">{{ stats.avg_check }} BYN</span>
+                </li>
+            </ul>
+
+            <h4>Мои ремонты</h4>
+            <ul class="list-group">
+                {% for order in orders %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ order.device.brand_model }} (Договор: {{ order.contract_number }})
+                        <span class="badge bg-warning rounded-pill">{{ order.get_status_display }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <div class="col-md-6">
+            <!-- ВИЗУАЛИЗАЦИЯ (Chart.js) -->
+            <h4>Статусы заказов (График)</h4>
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Подключение Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('myChart');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: {{ chart_labels|safe }},
+                datasets: [{
+                    label: 'Количество заказов',
+                    data: {{ chart_data|safe }},
+                    backgroundColor: ['#ffc107', '#0dcaf0', '#198754', '#dc3545'],
+                }]
+            }
+        });
+    </script>
+{% endif %}
+{% endblock %}

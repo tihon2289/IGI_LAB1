@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="mb-4">Наши услуги и цены</h2>
+
+<!-- Форма поиска и сортировки -->
+<form method="GET" class="row g-3 mb-4 bg-light p-3 rounded">
+    <div class="col-md-6">
+        <input type="text" name="q" class="form-control" placeholder="Поиск услуги (например, 'чистка')..." value="{{ request.GET.q }}">
+    </div>
+    <div class="col-md-4">
+        <select name="sort" class="form-select">
+            <option value="">Сортировка по умолчанию</option>
+            <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>Сначала дешевые</option>
+            <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>Сначала дорогие</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Применить</button>
+    </div>
+</form>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for service in services %}
+    <div class="col">
+        <div class="card h-100 shadow-sm border-primary">
+            <div class="card-body">
+                <h6 class="text-muted">{{ service.category.name }}</h6>
+                <h5 class="card-title">{{ service.name }}</h5>
+                <h4 class="text-primary mt-3">{{ service.price }} BYN</h4>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>Услуги пока не добавлены.</p>
+    {% endfor %}
+</div>
+{% endblock %}

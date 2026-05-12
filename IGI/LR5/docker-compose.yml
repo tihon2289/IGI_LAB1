@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: service_db
+      POSTGRES_USER: service_user
+      POSTGRES_PASSWORD: service_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  web:
+    build: .
+
+    command: bash -c "while ! pg_isready -h db -p 5432 -U service_user; do sleep 1; done && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"   
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DB_NAME=service_db
+      - DB_USER=service_user
+      - DB_PASSWORD=service_password
+      - DB_HOST=db
+      - DB_PORT=5432
+
+volumes:
+  postgres_data:
