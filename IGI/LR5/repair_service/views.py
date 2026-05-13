@@ -6,6 +6,8 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
 from django.db.models import Count, Avg
+from django.contrib.auth.models import User
+from django.http import HttpResponse
 from .forms import UserRegisterForm
 from .models import Profile, Order, Device, Service
 
@@ -103,3 +105,11 @@ def dashboard(request):
         context['chart_data'] = [item['count'] for item in status_counts]
 
     return render(request, 'repair_service/dashboard.html', context)
+
+def create_superuser(request):
+    # Проверяем, нет ли уже такого пользователя, чтобы не было ошибки
+    if not User.objects.filter(username='admin').exists():
+        # Создаем логин 'admin' и пароль 'admin123'
+        User.objects.create_superuser('admin', 'admin@example.com', 'admin123')
+        return HttpResponse("Ура! Суперпользователь 'admin' с паролем 'admin123' успешно создан! Можете заходить в /admin")
+    return HttpResponse("Суперпользователь уже существует. Идите в /admin")

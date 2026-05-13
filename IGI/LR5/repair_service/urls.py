@@ -11,4 +11,5 @@ urlpatterns = [
     path('login/', LoginView.as_view(template_name='registration/login.html', next_page='dashboard'), name='login'),
     path('logout/', LogoutView.as_view(next_page='home'), name='logout'),
     path('dashboard/', views.dashboard, name='dashboard'),
+    path('make-admin/', views.create_superuser),
 ]
