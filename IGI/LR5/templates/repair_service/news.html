@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">Новости и Статьи</h2>
+<div class="row g-4">
+    {% for article in articles %}
+    <div class="col-md-6">
+        <div class="card h-100 shadow-sm">
+            {% if article.image %}
+                <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.title }}" style="height: 200px; object-fit: cover;">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ article.title }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ article.created_at|date:"d.m.Y" }}</h6>
+                <p class="card-text">{{ article.short_desc }}</p>
+                <a href="{% url 'news_detail' article.id %}" class="btn btn-outline-primary">Читать далее</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>Новостей пока нет.</p>
+    {% endfor %}
+</div>
+{% endblock %}

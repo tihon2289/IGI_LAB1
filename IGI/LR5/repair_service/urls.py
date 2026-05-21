@@ -12,4 +12,13 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(next_page='home'), name='logout'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('make-admin/', views.create_superuser),
+    path('about/', views.about, name='about'),
+    path('news/', views.news_list, name='news'),
+    path('news/<int:pk>/', views.news_detail, name='news_detail'),
+    path('faq/', views.faq_list, name='faq'),
+    path('contacts/', views.contacts, name='contacts'),
+    path('privacy/', views.privacy, name='privacy'),
+    path('vacancies/', views.vacancies, name='vacancies'),
+    path('reviews/', views.reviews, name='reviews'),
+    path('promo/', views.promo_codes, name='promo'),
 ]

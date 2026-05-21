@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">Наши сотрудники</h2>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for employee in employees %}
+    <div class="col">
+        <div class="card h-100 text-center shadow-sm">
+            {% if employee.photo %}
+                <img src="{{ employee.photo.url }}" class="card-img-top mx-auto mt-3 rounded-circle" alt="Фото" style="width: 150px; height: 150px; object-fit: cover;">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ employee.name }}</h5>
+                <p class="card-text text-muted">{{ employee.job_description }}</p>
+                <hr>
+                <p class="card-text mb-1">📞 {{ employee.phone }}</p>
+                <p class="card-text">✉️ {{ employee.email }}</p>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>Информация о сотрудниках обновляется.</p>
+    {% endfor %}
+</div>
+{% endblock %}

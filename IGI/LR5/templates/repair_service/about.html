@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2 class="mb-4">О нашей компании</h2>
+        {% if info %}
+            <p class="lead">{{ info.text }}</p>
+            
+            {% if info.history %}
+                <h4 class="mt-4">История по годам</h4>
+                <div class="bg-light p-3 rounded">{{ info.history|linebreaks }}</div>
+            {% endif %}
+
+            {% if info.requisites %}
+                <h4 class="mt-4">Реквизиты</h4>
+                <div class="bg-light p-3 rounded">{{ info.requisites|linebreaks }}</div>
+            {% endif %}
+
+            {% if info.video_url %}
+                <a href="{{ info.video_url }}" target="_blank" class="btn btn-danger mt-3">Смотреть видео о нас</a>
+            {% endif %}
+        {% else %}
+            <p>Информация заполняется...</p>
+        {% endif %}
+    </div>
+    <div class="col-md-4 text-center">
+        {% if info and info.logo %}
+            <img src="{{ info.logo.url }}" class="img-fluid rounded shadow" alt="Логотип">
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

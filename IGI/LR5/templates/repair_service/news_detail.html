@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<a href="{% url 'news' %}" class="btn btn-secondary mb-3">&larr; Назад к новостям</a>
+<h2>{{ article.title }}</h2>
+<p class="text-muted">Опубликовано: {{ article.created_at|date:"d.m.Y H:i" }}</p>
+
+{% if article.image %}
+    <img src="{{ article.image.url }}" class="img-fluid rounded mb-4 shadow" alt="Фото статьи" style="max-height: 400px;">
+{% endif %}
+
+<div class="fs-5">
+    {{ article.content|linebreaks }}
+</div>
+{% endblock %}

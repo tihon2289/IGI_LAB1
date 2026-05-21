@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">Отзывы клиентов</h2>
+
+<div class="card mb-5 bg-light">
+    <div class="card-body">
+        {% if user.is_authenticated %}
+            <h4 class="card-title">Оставить отзыв</h4>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label>Оценка (от 1 до 5):</label>
+                    <select name="rating" class="form-select w-25" required>
+                        <option value="5">5 - Отлично</option>
+                        <option value="4">4 - Хорошо</option>
+                        <option value="3">3 - Нормально</option>
+                        <option value="2">2 - Плохо</option>
+                        <option value="1">1 - Ужасно</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label>Ваш отзыв:</label>
+                    <textarea name="text" class="form-control" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">Отправить отзыв</button>
+            </form>
+        {% else %}
+            <p class="mb-0">Чтобы оставить отзыв, пожалуйста, <a href="{% url 'login' %}">войдите</a> или <a href="{% url 'register' %}">зарегистрируйтесь</a>.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    {% for review in reviews %}
+    <div class="col-md-12 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">{{ review.author.username }} <span class="text-warning">★ {{ review.rating }}/5</span></h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ review.created_at|date:"d.m.Y" }}</h6>
+                <p class="card-text">{{ review.text }}</p>
+                {% if review.photo %}
+                    <img src="{{ review.photo.url }}" class="img-thumbnail" style="max-height: 100px;">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>Отзывов пока нет. Будьте первым!</p>
+    {% endfor %}
+</div>
+{% endblock %}

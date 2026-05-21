@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">Вакансии</h2>
+<div class="list-group">
+    {% for vacancy in vacancies %}
+        <div class="list-group-item list-group-item-action flex-column align-items-start mb-2 shadow-sm rounded">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1 text-primary">{{ vacancy.title }}</h5>
+                <small class="text-success fw-bold">Актуально</small>
+            </div>
+            <p class="mb-1 mt-2">{{ vacancy.description|linebreaks }}</p>
+        </div>
+    {% empty %}
+        <p>Сейчас открытых вакансий нет.</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -6,7 +6,6 @@
         <p class="text-muted">Дата по API: {{ current_time }} | Курс НБРБ: 1 USD = {{ usd_rate }} BYN</p>
     </div>
     <div class="col-md-4">
-        <!-- Текстовый календарь (из модуля calendar) -->
         <div class="bg-light p-2 rounded" style="font-size: 0.8rem;">
             {{ html_calendar|safe }}
         </div>
@@ -25,7 +24,6 @@
             <td>{{ order.device.brand_model }}</td>
             <td>{{ order.get_status_display }}</td>
             <td>{{ order.total_cost }} BYN</td>
-            <!-- Перевод в USD по курсу API -->
             <td class="text-success fw-bold">~ {% widthratio order.total_cost usd_rate 1 %} $</td>
         </tr>
         {% empty %}
@@ -58,13 +56,11 @@
         </div>
         
         <div class="col-md-6">
-            <!-- ВИЗУАЛИЗАЦИЯ (Chart.js) -->
             <h4>Статусы заказов (График)</h4>
             <canvas id="myChart"></canvas>
         </div>
     </div>
 
-    <!-- Подключение Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const ctx = document.getElementById('myChart');

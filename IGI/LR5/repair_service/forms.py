@@ -14,14 +14,12 @@ class UserRegisterForm(forms.ModelForm):
         model = User
         fields = ['username', 'password']
 
-    # Серверная валидация телефона
     def clean_phone(self):
         phone = self.cleaned_data.get('phone')
         if not re.match(r'^\+375 \(29\) \d{3}-\d{2}-\d{2}$', phone):
             raise forms.ValidationError("Неверный формат телефона!")
         return phone
 
-    # Серверная валидация возраста (18+)
     def clean_birth_date(self):
         birth_date = self.cleaned_data.get('birth_date')
         today = date.today()

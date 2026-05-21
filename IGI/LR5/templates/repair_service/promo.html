@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">Промокоды и купоны</h2>
+
+<h4 class="text-success">🔥 Действующие</h4>
+<ul class="list-group mb-5">
+    {% for promo in active_promos %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <strong class="fs-5">{{ promo.code }}</strong>
+            <span>{{ promo.discount }}</span>
+        </li>
+    {% empty %}
+        <li class="list-group-item">Нет активных промокодов</li>
+    {% endfor %}
+</ul>
+
+<h4 class="text-muted">📁 Архив</h4>
+<ul class="list-group">
+    {% for promo in archived_promos %}
+        <li class="list-group-item text-muted">
+            <del>{{ promo.code }}</del> — {{ promo.discount }}
+        </li>
+    {% empty %}
+        <li class="list-group-item">Архив пуст</li>
+    {% endfor %}
+</ul>
+{% endblock %}
