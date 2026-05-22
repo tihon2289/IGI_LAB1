@@ -126,7 +126,7 @@ class Order(models.Model):
     parts = models.ManyToManyField(SparePart, blank=True, verbose_name="Использованные запчасти")
     
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Статус")
-    created_at = models.DateField(auto_now_add=True, verbose_name="Дата заключения")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата и время заключения")
     deadline = models.DateField(verbose_name="Срок выполнения")
 
     class Meta:

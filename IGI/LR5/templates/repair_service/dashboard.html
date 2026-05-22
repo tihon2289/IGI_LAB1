@@ -1,9 +1,17 @@
 {% extends 'base.html' %}
+{% load tz %} 
 {% block content %}
 <div class="row mb-4">
     <div class="col-md-8">
         <h2>Личный кабинет ({{ profile.get_role_display }})</h2>
-        <p class="text-muted">Дата по API: {{ current_time }} | Курс НБРБ: 1 USD = {{ usd_rate }} BYN</p>
+        
+        <div class="alert alert-info mt-3 shadow-sm">
+            <strong>Ваш регион:</strong> {{ user_region|default:"Локальная сеть" }} <br>
+            <strong>Ваша Таймзона:</strong> {{ user_tz_name }} <br>
+            <strong>Текущее время (Local):</strong> {{ now_local|date:"d.m.Y H:i:s" }} <br>
+            <strong>Текущее время (UTC):</strong> {{ now_utc|date:"d.m.Y H:i:s" }}
+        </div>
+        
     </div>
     <div class="col-md-4">
         <div class="bg-light p-2 rounded" style="font-size: 0.8rem;">
@@ -14,17 +22,28 @@
 
 {% if profile.role == 'client' %}
     <h4>Мои заказы</h4>
-    <table class="table table-striped">
-        <tr>
-            <th>Договор</th><th>Устройство</th><th>Статус</th><th>Итого (BYN)</th><th>Итого (~USD)</th>
+    <table class="table table-striped table-bordered text-center">
+        <tr class="table-dark">
+            <th>Договор</th>
+            <th>Создан (Local)</th>
+            <th>Создан (UTC)</th>
+            <th>Статус</th>
+            <th>Итого</th>
         </tr>
         {% for order in orders %}
         <tr>
             <td>{{ order.contract_number }}</td>
-            <td>{{ order.device.brand_model }}</td>
+            
+            {% timezone user_tz_name %}
+                <td class="text-primary">{{ order.created_at|date:"d/m/Y H:i" }}</td>
+            {% endtimezone %}
+            
+            {% timezone "UTC" %}
+                <td class="text-secondary">{{ order.created_at|date:"d/m/Y H:i" }}</td>
+            {% endtimezone %}
+            
             <td>{{ order.get_status_display }}</td>
             <td>{{ order.total_cost }} BYN</td>
-            <td class="text-success fw-bold">~ {% widthratio order.total_cost usd_rate 1 %} $</td>
         </tr>
         {% empty %}
         <tr><td colspan="5">У вас пока нет заказов.</td></tr>
@@ -50,20 +69,6 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        const ctx = document.getElementById('myChart');
-        new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: {{ chart_labels|safe }},
-                datasets: [{
-                    label: 'Количество заказов',
-                    data: {{ chart_data|safe }},
-                    backgroundColor: ['#ffc107', '#0dcaf0', '#198754', '#dc3545'],
-                }]
-            }
-        });
-    </script>
+    
 {% endif %}
 {% endblock %}

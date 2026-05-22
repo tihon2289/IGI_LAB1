@@ -63,6 +63,38 @@ def dashboard(request):
     profile = request.user.profile
     context = {'profile': profile}
 
+    # --- ОПРЕДЕЛЕНИЕ ТАЙМЗОНЫ ПО IP (Требование методички) ---
+    # 1. Достаем IP-адрес пользователя
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        user_ip = x_forwarded_for.split(',')[0]
+    else:
+        user_ip = request.META.get('REMOTE_ADDR')
+
+    # 2. Узнаем таймзону через API (по умолчанию Минск, если сидим с localhost)
+    user_tz_name = 'Europe/Minsk' 
+    if user_ip and user_ip != '127.0.0.1':
+        try:
+            # Делаем запрос к API геолокации
+            ip_info = requests.get(f'http://ip-api.com/json/{user_ip}', timeout=2).json()
+            if ip_info.get('status') == 'success':
+                user_tz_name = ip_info.get('timezone', 'Europe/Minsk')
+                context['user_region'] = f"{ip_info.get('country')}, {ip_info.get('city')}"
+        except:
+            pass
+
+    context['user_tz_name'] = user_tz_name
+
+    now_utc = timezone.now() # Текущее время по Гринвичу (UTC)
+    try:
+        # Переводим UTC во время пользователя
+        now_local = now_utc.astimezone(zoneinfo.ZoneInfo(user_tz_name))
+    except:
+        now_local = timezone.localtime(now_utc)
+        
+    context['now_utc'] = now_utc
+    context['now_local'] = now_local
+
     try:
         nbrb_req = requests.get('https://api.nbrb.by/exrates/rates/431').json()
         context['usd_rate'] = nbrb_req.get('Cur_OfficialRate', 3.20)
