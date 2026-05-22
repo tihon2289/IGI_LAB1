@@ -11,6 +11,12 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from .forms import UserRegisterForm
 from .models import Profile, Order, Device, Service
+import matplotlib
+matplotlib.use('Agg') 
+import matplotlib.pyplot as plt
+import io
+import urllib
+import base64
 
 
 class ServiceListView(ListView):
@@ -89,8 +95,26 @@ def dashboard(request):
         }
 
         status_counts = all_orders.values('status').annotate(count=Count('id'))
-        context['chart_labels'] = [item['status'] for item in status_counts]
-        context['chart_data'] = [item['count'] for item in status_counts]
+        
+        if status_counts:
+            status_dict = dict(Order.STATUS_CHOICES)
+            labels = [status_dict.get(item['status'], item['status']) for item in status_counts]
+            sizes = [item['count'] for item in status_counts]
+
+            plt.figure(figsize=(5, 5))
+            plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140, 
+                    colors=['#ffc107', '#0dcaf0', '#198754', '#dc3545'])
+            plt.title('Статусы заказов')
+
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png', transparent=True)
+            buf.seek(0)
+            
+            string = base64.b64encode(buf.read())
+            uri = urllib.parse.quote(string)
+            context['chart_uri'] = uri
+            
+            plt.close()
 
     return render(request, 'repair_service/dashboard.html', context)
 
