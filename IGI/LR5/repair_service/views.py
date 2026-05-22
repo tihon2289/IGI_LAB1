@@ -150,3 +150,130 @@ def reviews(request):
 
     all_reviews = Review.objects.all().order_by('-created_at')
     return render(request, 'repair_service/reviews.html', {'reviews': all_reviews})
+
+# repair_service/views.py
+
+# Добавьте в начало файла новые импорты
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
+from .forms import ServiceForm, ServiceCategoryForm
+from .models import Service, ServiceCategory
+from .decorators import admin_required
+
+# ... ваш существующий код ...
+
+# ========== УПРАВЛЕНИЕ УСЛУГАМИ (только для админов) ==========
+
+@admin_required
+def manage_services(request):
+    """Панель управления услугами"""
+    services = Service.objects.select_related('category').all()
+    categories = ServiceCategory.objects.all()
+    
+    return render(request, 'repair_service/admin/manage_services.html', {
+        'services': services,
+        'categories': categories,
+        'active_tab': 'services'
+    })
+
+@admin_required
+def add_service(request):
+    """Добавление новой услуги"""
+    if request.method == 'POST':
+        form = ServiceForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, '✅ Услуга успешно добавлена!')
+            return redirect('manage_services')
+        else:
+            messages.error(request, '⚠️ Пожалуйста, исправьте ошибки в форме')
+    else:
+        form = ServiceForm()
+    
+    return render(request, 'repair_service/admin/service_form.html', {
+        'form': form,
+        'title': 'Добавление услуги',
+        'button_text': '➕ Добавить'
+    })
+
+@admin_required
+def edit_service(request, pk):
+    """Редактирование услуги"""
+    service = get_object_or_404(Service, pk=pk)
+    
+    if request.method == 'POST':
+        form = ServiceForm(request.POST, instance=service)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'✅ Услуга "{service.name}" успешно обновлена!')
+            return redirect('manage_services')
+        else:
+            messages.error(request, '⚠️ Пожалуйста, исправьте ошибки в форме')
+    else:
+        form = ServiceForm(instance=service)
+    
+    return render(request, 'repair_service/admin/service_form.html', {
+        'form': form,
+        'title': f'Редактирование услуги: {service.name}',
+        'button_text': '💾 Сохранить',
+        'service': service
+    })
+
+@admin_required
+def delete_service(request, pk):
+    """Удаление услуги"""
+    service = get_object_or_404(Service, pk=pk)
+    
+    if request.method == 'POST':
+        service_name = service.name
+        service.delete()
+        messages.success(request, f'🗑️ Услуга "{service_name}" удалена!')
+        return redirect('manage_services')
+    
+    return render(request, 'repair_service/admin/service_confirm_delete.html', {
+        'service': service
+    })
+
+
+@admin_required
+def manage_categories(request):
+    """Панель управления категориями услуг"""
+    categories = ServiceCategory.objects.all().order_by('name')
+    
+    if request.method == 'POST':
+        form = ServiceCategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, '✅ Категория успешно добавлена!')
+            return redirect('manage_categories')
+    else:
+        form = ServiceCategoryForm()
+    
+    return render(request, 'repair_service/admin/manage_categories.html', {
+        'categories': categories,
+        'form': form,
+        'active_tab': 'categories'
+    })
+
+@admin_required
+def delete_category(request, pk):
+    """Удаление категории (только если нет связанных услуг)"""
+    category = get_object_or_404(ServiceCategory, pk=pk)
+    
+    if request.method == 'POST':
+        if category.service_set.exists():
+            messages.error(
+                request, 
+                f'Нельзя удалить категорию "{category.name}", так как в ней есть услуги. '
+                f'Сначала удалите или переместите услуги.'
+            )
+        else:
+            category_name = category.name
+            category.delete()
+            messages.success(request, f'✅ Категория "{category_name}" удалена!')
+        return redirect('manage_categories')
+    
+    return render(request, 'repair_service/admin/category_confirm_delete.html', {
+        'category': category
+    })

@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
+from django import forms
+from .models import Service, ServiceCategory
 from datetime import date
 
 
@@ -20,6 +22,7 @@ class Profile(models.Model):
     ROLE_CHOICES = [
         ('client', 'Клиент'),
         ('master', 'Сотрудник (Мастер)'),
+        ('admin', 'Администратор'), 
     ]
     
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name="Пользователь")
@@ -213,3 +216,57 @@ class PromoCode(models.Model):
     class Meta:
         verbose_name = "Промокод"
         verbose_name_plural = "Промокоды и купоны"
+
+
+class ServiceForm(forms.ModelForm):
+    """Форма для добавления/редактирования услуги"""
+    
+    class Meta:
+        model = Service
+        fields = ['category', 'name', 'price']
+        widgets = {
+            'category': forms.Select(attrs={
+                'class': 'form-control',
+                'style': 'width: 100%; padding: 8px; border-radius: 4px;'
+            }),
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'style': 'width: 100%; padding: 8px; border-radius: 4px;',
+                'placeholder': 'Например: Замена экрана iPhone'
+            }),
+            'price': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'style': 'width: 100%; padding: 8px; border-radius: 4px;',
+                'placeholder': '0.00',
+                'step': '0.01'
+            }),
+        }
+        labels = {
+            'category': 'Категория услуги',
+            'name': 'Название услуги',
+            'price': 'Стоимость (BYN)',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            if not self.fields[field].widget.attrs.get('class'):
+                self.fields[field].widget.attrs['class'] = 'form-control'
+
+
+class ServiceCategoryForm(forms.ModelForm):
+    """Форма для добавления/редактирования категории услуг"""
+    
+    class Meta:
+        model = ServiceCategory
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'style': 'width: 100%; padding: 8px; border-radius: 4px;',
+                'placeholder': 'Например: Ремонт телефонов'
+            }),
+        }
+        labels = {
+            'name': 'Название категории',
+        }

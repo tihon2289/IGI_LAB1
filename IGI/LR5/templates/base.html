@@ -29,6 +29,21 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'contacts' %}">Контакты</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'reviews' %}">Отзывы</a></li>
                     {% if user.is_authenticated %}
+                    {% if user.is_staff or user.profile.role == 'admin' %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                Админ-панель
+                            </a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'manage_services' %}">
+                    📋 Управление услугами
+                </a></li>
+                <li><a class="dropdown-item" href="/admin/">
+                    🔧 Django Admin
+                </a></li>
+            </ul>
+        </li>
+    {% endif %}
                         <li class="nav-item"><a class="nav-link text-info" href="{% url 'dashboard' %}">Личный кабинет</a></li>
                         <li class="nav-item">
                             <form action="{% url 'logout' %}" method="post" class="d-inline">

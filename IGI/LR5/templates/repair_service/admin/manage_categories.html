@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Управление категориями{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>📁 Управление категориями услуг</h1>
+        <a href="{% url 'manage_services' %}" class="btn btn-outline-secondary">
+            ← Назад к услугам
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4>➕ Добавить категорию</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ form.name.label_tag }}
+                            {{ form.name }}
+                            <small class="text-muted">Например: "Ремонт телефонов", "Ремонт ноутбуков"</small>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">
+                            Добавить категорию
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4>📋 Существующие категории</h4>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for category in categories %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><strong>{{ category.name }}</strong></span>
+                            <a href="{% url 'delete_category' category.id %}" class="btn btn-sm btn-danger"
+                               onclick="return confirm('Удалить категорию {{ category.name }}? Услуги в этой категории не удалятся')">
+                                Удалить
+                            </a>
+                        </div>
+                        {% empty %}
+                        <div class="text-muted text-center">Нет категорий</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

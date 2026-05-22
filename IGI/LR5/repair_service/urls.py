@@ -21,4 +21,11 @@ urlpatterns = [
     path('vacancies/', views.vacancies, name='vacancies'),
     path('reviews/', views.reviews, name='reviews'),
     path('promo/', views.promo_codes, name='promo'),
+    path('admin-panel/services/', views.manage_services, name='manage_services'),
+    path('admin-panel/services/add/', views.add_service, name='add_service'),
+    path('admin-panel/services/<int:pk>/edit/', views.edit_service, name='edit_service'),
+    path('admin-panel/services/<int:pk>/delete/', views.delete_service, name='delete_service'),
+    
+    path('admin-panel/categories/', views.manage_categories, name='manage_categories'),
+    path('admin-panel/categories/<int:pk>/delete/', views.delete_category, name='delete_category'),
 ]
