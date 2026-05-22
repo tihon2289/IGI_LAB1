@@ -151,7 +151,6 @@ def reviews(request):
     all_reviews = Review.objects.all().order_by('-created_at')
     return render(request, 'repair_service/reviews.html', {'reviews': all_reviews})
 
-# repair_service/views.py
 
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
@@ -180,17 +179,17 @@ def add_service(request):
         form = ServiceForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, '✅ Услуга успешно добавлена!')
+            messages.success(request, 'Услуга успешно добавлена!')
             return redirect('manage_services')
         else:
-            messages.error(request, '⚠️ Пожалуйста, исправьте ошибки в форме')
+            messages.error(request, 'Пожалуйста, исправьте ошибки в форме')
     else:
         form = ServiceForm()
     
     return render(request, 'repair_service/admin/service_form.html', {
         'form': form,
         'title': 'Добавление услуги',
-        'button_text': '➕ Добавить'
+        'button_text': 'Добавить'
     })
 
 @admin_required
@@ -202,17 +201,17 @@ def edit_service(request, pk):
         form = ServiceForm(request.POST, instance=service)
         if form.is_valid():
             form.save()
-            messages.success(request, f'✅ Услуга "{service.name}" успешно обновлена!')
+            messages.success(request, f'Услуга "{service.name}" успешно обновлена!')
             return redirect('manage_services')
         else:
-            messages.error(request, '⚠️ Пожалуйста, исправьте ошибки в форме')
+            messages.error(request, 'Пожалуйста, исправьте ошибки в форме')
     else:
         form = ServiceForm(instance=service)
     
     return render(request, 'repair_service/admin/service_form.html', {
         'form': form,
         'title': f'Редактирование услуги: {service.name}',
-        'button_text': '💾 Сохранить',
+        'button_text': 'Сохранить',
         'service': service
     })
 
@@ -224,7 +223,7 @@ def delete_service(request, pk):
     if request.method == 'POST':
         service_name = service.name
         service.delete()
-        messages.success(request, f'🗑️ Услуга "{service_name}" удалена!')
+        messages.success(request, f'Услуга "{service_name}" удалена!')
         return redirect('manage_services')
     
     return render(request, 'repair_service/admin/service_confirm_delete.html', {
@@ -241,7 +240,7 @@ def manage_categories(request):
         form = ServiceCategoryForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, '✅ Категория успешно добавлена!')
+            messages.success(request, 'Категория успешно добавлена!')
             return redirect('manage_categories')
     else:
         form = ServiceCategoryForm()
@@ -267,9 +266,10 @@ def delete_category(request, pk):
         else:
             category_name = category.name
             category.delete()
-            messages.success(request, f'✅ Категория "{category_name}" удалена!')
+            messages.success(request, f'Категория "{category_name}" удалена!')
         return redirect('manage_categories')
     
     return render(request, 'repair_service/admin/category_confirm_delete.html', {
         'category': category
     })
+

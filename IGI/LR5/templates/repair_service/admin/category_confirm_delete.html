@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Удаление категории{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">🗑️ Подтверждение удаления категории</h3>
+                </div>
+                <div class="card-body">
+                    <p>Вы уверены, что хотите удалить категорию:</p>
+                    <h4 class="text-danger">«{{ category.name }}»</h4>
+                    
+                    {% if category.service_set.exists %}
+                        <div class="alert alert-danger mt-3">
+                            <strong>Невозможно удалить!</strong><br>
+                            В этой категории есть услуги. Сначала удалите или переместите их.
+                        </div>
+                        <a href="{% url 'manage_categories' %}" class="btn btn-secondary">
+                            ← Назад
+                        </a>
+                    {% else %}
+                        <div class="alert alert-warning mt-3">
+                            <strong>⚠️ Внимание!</strong> Это действие невозможно отменить.
+                        </div>
+                        
+                        <form method="post" class="mt-4">
+                            {% csrf_token %}
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'manage_categories' %}" class="btn btn-secondary">
+                                    ← Отмена
+                                </a>
+                                <button type="submit" class="btn btn-danger">
+                                    Да, удалить категорию
+                                </button>
+                            </div>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
