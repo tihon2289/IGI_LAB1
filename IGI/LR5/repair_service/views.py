@@ -1,5 +1,6 @@
 import requests
 import calendar
+from django.utils import timezone
 from datetime import datetime
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
@@ -11,8 +12,6 @@ from django.http import HttpResponse
 from .forms import UserRegisterForm
 from .models import Profile, Order, Device, Service
 
-def home(request):
-    return render(request, 'repair_service/index.html')
 
 class ServiceListView(ListView):
     model = Service
@@ -65,10 +64,10 @@ def dashboard(request):
         context['usd_rate'] = 3.20 
 
     try:
-        time_req = requests.get('http://worldtimeapi.org/api/timezone/Europe/Minsk').json()
+        time_req = requests.get('http://worldtimeapi.org/api/timezone/Europe/Minsk', timeout=3).json()
         context['current_time'] = time_req.get('datetime')[:10]
     except:
-        context['current_time'] = datetime.now().strftime('%Y-%m-%d')
+        context['current_time'] = timezone.now().date().isoformat()  
 
     now = datetime.now()
     cal = calendar.HTMLCalendar(calendar.MONDAY)
