@@ -153,7 +153,6 @@ def reviews(request):
 
 # repair_service/views.py
 
-# Добавьте в начало файла новые импорты
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
@@ -161,9 +160,6 @@ from .forms import ServiceForm, ServiceCategoryForm
 from .models import Service, ServiceCategory
 from .decorators import admin_required
 
-# ... ваш существующий код ...
-
-# ========== УПРАВЛЕНИЕ УСЛУГАМИ (только для админов) ==========
 
 @admin_required
 def manage_services(request):

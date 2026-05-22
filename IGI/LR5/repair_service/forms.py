@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from .models import Service, ServiceCategory
 from .models import Profile
 from datetime import date
 import re
@@ -27,3 +28,33 @@ class UserRegisterForm(forms.ModelForm):
         if age < 18:
             raise forms.ValidationError("Регистрация доступна только с 18 лет!")
         return birth_date
+    
+class ServiceForm(forms.ModelForm):
+    """Форма для добавления/редактирования услуги"""
+    
+    class Meta:
+        model = Service
+        fields = ['category', 'name', 'price']
+        widgets = {
+            'category': forms.Select(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Например: Замена экрана'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+        }
+        labels = {
+            'category': 'Категория услуги',
+            'name': 'Название услуги',
+            'price': 'Стоимость (BYN)',
+        }
+
+class ServiceCategoryForm(forms.ModelForm):
+    """Форма для добавления/редактирования категории услуг"""
+    
+    class Meta:
+        model = ServiceCategory
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Например: Ремонт телефонов'}),
+        }
+        labels = {
+            'name': 'Название категории',
+        }
