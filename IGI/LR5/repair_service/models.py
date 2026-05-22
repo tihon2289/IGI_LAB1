@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django import forms
-from .models import Service, ServiceCategory
 from datetime import date
 
 
